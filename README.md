@@ -68,3 +68,53 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣
+
+Table:
+
+CREATE TABLE popchoicemovies (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    release_year INTEGER,
+    content TEXT,
+    embedding vector(1536)    
+);
+ALTER TABLE popchoicemovies ADD CONSTRAINT content_unique UNIQUE (content);
+
+🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣
+
+Query Embedding using similarity search: 
+
+CREATE OR REPLACE FUNCTION match_popchoicemovies (
+    query_embedding vector(1536),
+    match_threshold float,
+    match_count int
+)
+RETURNS TABLE (
+    id bigint,
+    content text,
+    release_year integer,
+    title text,
+    similarity float
+)
+LANGUAGE SQL STABLE
+AS $$
+SELECT
+    popchoicemovies.id,
+    popchoicemovies.content,
+    popchoicemovies.release_year,
+    popchoicemovies.title,
+    1 - (popchoicemovies.embedding <=> query_embedding) AS similarity
+FROM
+    popchoicemovies
+WHERE
+    1 - (popchoicemovies.embedding <=> query_embedding) > match_threshold
+ORDER BY
+    similarity DESC
+LIMIT
+    match_count;
+$$;
+*/
+
+🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣🟣
